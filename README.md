@@ -1,23 +1,32 @@
-# portfolio-site
-Um site estático que também servirá como informações sobre mim e de portfólio
+# React + TypeScript + Vite
 
-### hospedado em: 
-https://vitor-hugo-soares-da-silva-dev.github.io/portfolio-site/
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-## Página home:
-<img width="2526" height="1276" alt="Screenshot 2026-04-04 at 10-52-34 Meu Site Pessoal" src="https://github.com/user-attachments/assets/3b9c0552-4b90-4342-98c4-54fe842023f5" />
+Currently, two official plugins are available:
 
-## Página sobre mim:
-<img width="2526" height="1276" alt="Screenshot 2026-04-04 at 11-16-09 Sobre mim" src="https://github.com/user-attachments/assets/fdfe6f62-be3c-4a4a-9d5c-a05502564d06" />
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Página Pets:
-<img width="2526" height="1276" alt="Screenshot 2026-04-06 at 10-32-15 Pets" src="https://github.com/user-attachments/assets/85630423-f275-4d00-9ce1-bd2537c14579" />
+## React Compiler
 
-TODO:
-- [x] página home
-- [x] página sobre mim
-- [x] página pets
-- [ ] página educação
-- [ ] página projetos
-- [ ] página contato
-- [ ] responsividade
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
+```
+
+See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
