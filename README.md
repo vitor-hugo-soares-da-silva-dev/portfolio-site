@@ -1,32 +1,50 @@
-# React + TypeScript + Vite
+# portfolio-site
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Portfólio pessoal em formato de desktop Hyprland/NixOS, com tema Catppuccin Mocha Pink.
 
-Currently, two official plugins are available:
+Cada "janela" da waybar abre um espaço do site — a versão antiga em HTML puro (home, sobre, pets,
+educação, projetos e contato) foi reorganizada em componentes React dentro do mesmo visual.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- React 19 + TypeScript
+- Vite 8
+- TailwindCSS 4 (tokens Catppuccin em `src/index.css`)
+- 3270 Nerd Font (local, em `src/assets/fonts`)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Rodando localmente
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # servidor de desenvolvimento
+npm run build    # typecheck + build de produção (dist/)
+npm run preview  # serve o dist/ localmente
+npm run lint     # oxlint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Deploy no GitHub Pages
+
+O deploy é feito pela action em `.github/workflows/deploy.yml`: basta dar push na `main`.
+
+O `base` do Vite está configurado em `/portfolio-site/` (ver `vite.config.ts`), que é o caminho
+usado pelo GitHub Pages para este repositório. Se o repositório for renomeado, ajuste o `base`
+e a URL em `src/data/site.ts` (`contacts`).
+
+Site no ar: https://vitor-hugo-soares-da-silva-dev.github.io/portfolio-site/
+
+## Estrutura
+
+```
+src/
+  components/
+    layout/      Waybar, Tile (janela) e o catálogo de workspaces
+    sections/    Sobre, Pets, Educação, Contato e Projetos
+    tiles/       cmatrix, cava e fastfetch
+    ui/          Icon (SVG inline) e Segments (texto com links)
+    Terminal.tsx e Quote.tsx
+  data/site.ts   todo o conteúdo do site (textos, projetos, pets, quotes)
+  hooks/         useAge, useClock, useMatrix, useCava
+```
+
+A versão estática original do design (arquivo único com CSS e JS inline) ficou arquivada em
+`public/legacy/portfolio-hyprland.html`.
