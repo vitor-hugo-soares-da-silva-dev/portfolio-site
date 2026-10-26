@@ -15,7 +15,6 @@ export default function PetsSection() {
             <img
               alt={`Foto do ${pet.name}`}
               className="h-56 w-full rounded-lg border-2 border-ctp-surface1 bg-ctp-crust object-contain sm:h-72 lg:h-96"
-              loading="lazy"
               src={pet.photo}
             />
 
