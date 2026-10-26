@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import Icon from './ui/Icon'
 import { profile } from '../data/site'
 
@@ -6,79 +7,137 @@ type BootScreenProps = {
 }
 
 export default function BootScreen({ onBoot }: BootScreenProps) {
+  const [isBooting, setIsBooting] = useState(false)
+  const [time, setTime] = useState('')
+  const [dateStr, setDateStr] = useState('')
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      setTime(
+        now.toLocaleTimeString('pt-BR', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      )
+      setDateStr(
+        now.toLocaleDateString('pt-BR', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        }),
+      )
+    }
+
+    updateTime()
+    const timer = setInterval(updateTime, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const handleLaunch = () => {
+    if (isBooting) return
+    setIsBooting(true)
+
+    setTimeout(() => {
+      onBoot()
+    }, 450)
+  }
+
   return (
-    <div className="fixed inset-0 z-[999] flex flex-col items-center justify-between bg-ctp-crust p-6 select-none font-nerd-mono">
-      {/* Topo: Bar com informações de hardware/sistema (estilo waybar mínima) */}
-      <header className="flex w-full max-w-4xl items-center justify-between text-[0.72rem] text-ctp-overlay0 border-b border-ctp-surface0/40 pb-3">
+    <div
+      className={`fixed inset-0 z-[999] flex flex-col items-center justify-between overflow-y-auto bg-ctp-crust p-4 sm:p-8 font-nerd-mono select-none transition-all duration-500 ease-out ${
+        isBooting ? 'opacity-0 scale-[1.02] blur-sm' : 'opacity-100 scale-100'
+      }`}
+    >
+      {/* Topo: Barra do sistema (mais legível) */}
+      <header className="flex w-full max-w-4xl items-center justify-between border-b border-ctp-surface0/60 pb-3 sm:pb-4 text-xs sm:text-sm text-ctp-overlay0">
         <div className="flex items-center gap-2">
-          <Icon className="text-ctp-mauve" name="snowflake" size={14} />
-          <span className="text-ctp-subtext0">nixos-unstable</span>
+          <Icon className="text-ctp-mauve" name="snowflake" size={16} />
+          <span className="text-ctp-subtext0 font-medium">nixos</span>
           <span className="text-ctp-surface1">/</span>
-          <span className="text-ctp-overlay1">hyprland 0.45</span>
+          <span className="text-ctp-overlay1">hyprland</span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 text-xs sm:text-sm">
           <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-ctp-green" />
-            pipewire.service
+            <span className="size-2 animate-pulse rounded-full bg-ctp-green" />
+            systemd: active
           </span>
-          <span className="text-ctp-surface1">·</span>
-          <span>x86_64</span>
+          <span className="text-ctp-surface1 hidden sm:inline">·</span>
+          <span className="hidden sm:inline">pipewire-pulse</span>
         </div>
       </header>
 
-      {/* Centro: Card estilo Login Screen / Hyprlock */}
-      <main className="relative flex w-full max-w-sm flex-col items-center gap-6 rounded-2xl border border-ctp-surface0 bg-ctp-base/80 p-6 shadow-2xl backdrop-blur-md">
-        {/* Avatar / Host Header */}
-        <div className="flex flex-col items-center gap-2 text-center">
-          <div className="relative flex size-20 items-center justify-center rounded-full border border-ctp-mauve/40 bg-ctp-mantle text-ctp-mauve shadow-inner">
-            <Icon name="snowflake" size={38} />
-            <span className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-ctp-base bg-ctp-green" />
+      {/* Centro: Relógio Grande + Card de Sessão */}
+      <main className="my-auto flex w-full max-w-md flex-col items-center gap-8 py-6 sm:gap-10 sm:py-8">
+        {/* Relógio do Hyprlock em destaque */}
+        <div className="flex flex-col items-center text-center">
+          <div className="text-7xl font-extrabold tracking-tight text-ctp-text sm:text-8xl md:text-9xl font-sans drop-shadow-sm">
+            {time || '12:00'}
           </div>
-
-          <div className="mt-1 flex items-center gap-1.5 text-xs text-ctp-subtext0">
-            <span className="text-ctp-mauve font-semibold">{profile.user}</span>
-            <span className="text-ctp-overlay0">@</span>
-            <span className="text-ctp-blue">{profile.host}</span>
-          </div>
-
-          <div className="text-[0.7rem] text-ctp-overlay0">
-            Sessão pronta · áudio aguardando autorização
+          <div className="mt-2 text-sm sm:text-base tracking-widest text-ctp-subtext0 capitalize">
+            {dateStr || 'carregando...'}
           </div>
         </div>
 
-        {/* Botão de Launch estilo Prompt / Comando */}
-        <button
-          className="group relative flex w-full items-center justify-between rounded-lg border border-ctp-surface1 bg-ctp-mantle px-4 py-3 text-xs text-ctp-text transition-all duration-150 hover:border-ctp-mauve hover:bg-ctp-surface0/60 focus:outline-none focus:ring-1 focus:ring-ctp-mauve active:scale-[0.99]"
-          onClick={onBoot}
-          type="button"
-        >
-          <div className="flex items-center gap-2 text-ctp-subtext0 group-hover:text-ctp-mauve">
-            <span className="text-ctp-mauve">❯</span>
-            <span className="font-semibold text-ctp-text">exec Hyprland</span>
+        {/* Card do Usuário (tamanho confortável para toque no celular) */}
+        <div className="flex w-full flex-col items-center gap-5 sm:gap-6 rounded-2xl border border-ctp-surface0 bg-ctp-base/80 p-6 sm:p-8 shadow-2xl backdrop-blur-md">
+          {/* Usuário e Host */}
+          <div className="flex items-center gap-4 w-full justify-start sm:justify-center">
+            <div className="flex size-14 sm:size-16 shrink-0 items-center justify-center rounded-2xl border border-ctp-mauve/40 bg-ctp-mantle text-ctp-mauve shadow-inner">
+              <Icon name="snowflake" size={30} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-base sm:text-lg font-bold text-ctp-text">
+                {profile.user}
+                <span className="text-ctp-mauve">@{profile.host}</span>
+              </span>
+              <span className="text-xs sm:text-sm text-ctp-overlay1">
+                sessão wayland pronta
+              </span>
+            </div>
           </div>
 
-          <span className="rounded border border-ctp-surface1 bg-ctp-crust px-1.5 py-0.5 text-[0.65rem] text-ctp-overlay1 group-hover:border-ctp-mauve/40 group-hover:text-ctp-mauve">
-            boot ↵
-          </span>
-        </button>
+          {/* Botão de Boot com altura de toque ergonômica */}
+          <button
+            className={`group flex w-full items-center justify-between rounded-xl border px-5 py-3.5 sm:py-4 text-sm sm:text-base transition-all duration-200 focus:outline-none ${
+              isBooting
+                ? 'border-ctp-green bg-ctp-green/15 text-ctp-green'
+                : 'border-ctp-surface1 bg-ctp-mantle text-ctp-text hover:border-ctp-mauve hover:bg-ctp-surface0/70 active:scale-[0.98] shadow-sm'
+            }`}
+            onClick={handleLaunch}
+            type="button"
+          >
+            <div className="flex items-center gap-3">
+              <span className={`text-base sm:text-lg ${isBooting ? 'text-ctp-green' : 'text-ctp-mauve'}`}>
+                {isBooting ? '✓' : '❯'}
+              </span>
+              <span className="font-semibold tracking-wide">
+                {isBooting ? 'starting session...' : 'exec Hyprland'}
+              </span>
+            </div>
 
-        {/* Color Palette Catppuccin Clássica (estilo Fastfetch) */}
-        <div className="flex items-center gap-1.5 pt-1">
-          <span className="size-2.5 rounded-full bg-ctp-red" />
-          <span className="size-2.5 rounded-full bg-ctp-peach" />
-          <span className="size-2.5 rounded-full bg-ctp-yellow" />
-          <span className="size-2.5 rounded-full bg-ctp-green" />
-          <span className="size-2.5 rounded-full bg-ctp-sapphire" />
-          <span className="size-2.5 rounded-full bg-ctp-blue" />
-          <span className="size-2.5 rounded-full bg-ctp-mauve" />
-          <span className="size-2.5 rounded-full bg-ctp-pink" />
+            <span className="rounded-md border border-ctp-surface1/70 bg-ctp-crust px-2 py-1 text-xs text-ctp-overlay0 group-hover:border-ctp-mauve/40 group-hover:text-ctp-mauve font-sans font-medium">
+              {isBooting ? 'load' : '↵ enter'}
+            </span>
+          </button>
+
+          {/* Colorblocks Catppuccin maiores */}
+          <div className="flex items-center gap-2 pt-1">
+            <span className="size-3 sm:size-3.5 rounded-full bg-ctp-red" />
+            <span className="size-3 sm:size-3.5 rounded-full bg-ctp-peach" />
+            <span className="size-3 sm:size-3.5 rounded-full bg-ctp-yellow" />
+            <span className="size-3 sm:size-3.5 rounded-full bg-ctp-green" />
+            <span className="size-3 sm:size-3.5 rounded-full bg-ctp-sapphire" />
+            <span className="size-3 sm:size-3.5 rounded-full bg-ctp-blue" />
+            <span className="size-3 sm:size-3.5 rounded-full bg-ctp-mauve" />
+          </div>
         </div>
       </main>
 
-      {/* Rodapé sutil com dica de ambiente */}
-      <footer className="text-[0.68rem] text-ctp-overlay0">
-        pressione <kbd className="rounded border border-ctp-surface1 bg-ctp-surface0/40 px-1 py-0.5 text-ctp-subtext0">boot</kbd> para inicializar drivers de áudio e a interface
+      {/* Rodapé legível */}
+      <footer className="pt-4 text-center text-xs sm:text-sm text-ctp-overlay0">
+        clique em <span className="text-ctp-subtext0 font-medium">exec Hyprland</span> para inicializar o áudio e a interface
       </footer>
     </div>
   )
