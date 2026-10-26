@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hyprland Ricing // NixOS Catppuccin Mocha Pink</title>
+
+  <!-- Google Fonts: JetBrains Mono & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    /* ========================================================
+       PALETA CATPPUCCIN MOCHA COM ACCENT PINK (#f5c2e7)
+    ======================================================== */
+    :root {
+      --ctp-base: #1e1e2e;
+      --ctp-mantle: #181825;
+      --ctp-crust: #11111b;
+      --ctp-surface0: #313244;
+      --ctp-surface1: #45475a;
+      --ctp-surface2: #585b70;
+      
+      --ctp-text: #cdd6f4;
+      --ctp-subtext0: #a6adc8;
+      --ctp-subtext1: #bac2de;
+      --ctp-overlay0: #6c7086;
+      
+      --ctp-pink: #f5c2e7;     /* ACCENT PRINCIPAL */
+      --ctp-mauve: #cba6f7;
+      --ctp-lavender: #b4befe;
+      --ctp-red: #f38ba8;
+      --ctp-peach: #fab387;
+      --ctp-yellow: #f9e2af;
+      --ctp-green: #a6e3a1;
+      --ctp-teal: #94e2d5;
+      --ctp-blue: #89b4fa;
+
+      --accent: var(--ctp-pink);
+      --accent-alpha: rgba(245, 194, 231, 0.25);
+      --accent-glow: 0 0 16px rgba(245, 194, 231, 0.4);
+      --hypr-border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--ctp-crust);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(245, 194, 231, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(203, 166, 247, 0.04) 0%, transparent 40%);
+      color: var(--ctp-text);
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-bottom: 2rem;
+    }
+
+    /* ================= WAYBAR ================= */
+    .waybar-container {
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+      padding: 0 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .waybar {
+      background: rgba(24, 24, 37, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--ctp-surface0);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .waybar-left, .waybar-center, .waybar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .workspaces {
+      display: flex;
+      background: var(--ctp-crust);
+      padding: 3px 5px;
+      border-radius: 8px;
+      gap: 4px;
+      border: 1px solid var(--ctp-surface0);
+    }
+
+    .ws-btn {
+      background: transparent;
+      border: none;
+      color: var(--ctp-overlay0);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.8rem;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .ws-btn:hover {
+      color: var(--accent);
+      background: var(--ctp-surface0);
+    }
+
+    .ws-btn.active {
+      background: var(--accent);
+      color: var(--ctp-crust);
+      box-shadow: 0 0 8px var(--accent-alpha);
+    }
+
+    .active-window-title {
+      color: var(--ctp-subtext0);
+      font-size: 0.8rem;
+      max-width: 190px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Waybar Music Player */
+    .mpris-pill {
+      background: var(--ctp-surface0);
+      border: 1px solid rgba(245, 194, 231, 0.25);
+      border-radius: 20px;
+      padding: 4px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ctp-text);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .mpris-pill:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-alpha);
+    }
+
+    .play-btn {
+      background: var(--accent);
+      border: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: var(--ctp-crust);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .track-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .track-title {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    .track-time {
+      color: var(--ctp-overlay0);
+      font-size: 0.75rem;
+    }
+
+    .module-pill {
+      background: var(--ctp-surface0);
+      padding: 4px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--ctp-subtext1);
+    }
+
+    .module-pill i {
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+
+    .age-pill {
+      border: 1px solid rgba(245, 194, 231, 0.25);
+    }
+    .age-ms {
+      color: var(--accent);
+      font-size: 0.72rem;
+      min-width: 28px;
+      display: inline-block;
+    }
+
+    /* ================= HYPRLAND TILES ================= */
+    .hypr-workspace {
+      flex: 1;
+      padding: 0 1.2rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 992px) {
+      .hypr-workspace {
+        grid-template-columns: 420px 1fr;
+        grid-template-rows: auto 1fr;
+      }
+    }
+
+    .hypr-tile {
+      background: var(--ctp-base);
+      border: 2px solid var(--ctp-surface0);
+      border-radius: var(--hypr-border-radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .hypr-tile:hover, .hypr-tile.active-window {
+      border-color: var(--accent);
+      box-shadow: var(--accent-glow);
+    }
+
+    .tile-bar {
+      background: var(--ctp-mantle);
+      border-bottom: 1px solid var(--ctp-surface0);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      user-select: none;
+      height: 36px;
+      flex-shrink: 0;
+    }
+
+    .tile-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-close { background: var(--ctp-red); }
+    .dot-min { background: var(--ctp-yellow); }
+    .dot-max { background: var(--ctp-green); }
+
+    .tile-title {
+      color: var(--ctp-subtext0);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tile-title i {
+      color: var(--accent);
+    }
+
+    .tile-body {
+      padding: 1.2rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Tile CMatrix com altura fixa e canvas posicionado com segurança */
+    .tile-cmatrix {
+      height: 220px;
+      background: var(--ctp-crust);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #matrixCanvas {
+      position: absolute;
+      top: 36px;
+      left: 0;
+      width: 100%;
+      height: calc(100% - 36px);
+      display: block;
+    }
+
+    /* Tile CAVA */
+    .cava-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 110px;
+      background: var(--ctp-mantle);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .cava-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      width: 100%;
+      height: 80px;
+      justify-content: space-between;
+    }
+
+    .cava-bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--ctp-mauve), var(--accent));
+      border-radius: 3px 3px 0 0;
+      height: 10%;
+      transition: height 0.08s ease-in-out;
+      box-shadow: 0 0 6px var(--accent-alpha);
+    }
+
+    .cava-info {
+      margin-top: 6px;
+      font-size: 0.68rem;
+      color: var(--ctp-overlay0);
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    /* ================= FASTFETCH NIXOS ================= */
+    .fastfetch-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .fastfetch-header-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nixos-snowflake-ascii {
+      font-size: 0.62rem;
+      line-height: 1.15;
+      color: var(--accent);
+      white-space: pre;
+      user-select: none;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(245, 194, 231, 0.4);
+    }
+
+    .fastfetch-user-banner {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-host-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .user-name { color: var(--accent); }
+    .host-at { color: var(--ctp-subtext0); }
+    .host-name { color: var(--ctp-blue); }
+
+    .user-separator {
+      color: var(--ctp-surface2);
+      letter-spacing: -1px;
+      margin: 2px 0 4px 0;
+    }
+
+    .fastfetch-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.38rem;
+    }
+
+    .fetch-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.45rem;
+      line-height: 1.4;
+    }
+
+    .fetch-key {
+      color: var(--accent);
+      font-weight: 600;
+      min-width: 110px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .fetch-val {
+      color: var(--ctp-text);
+      word-break: break-word;
+    }
+
+    /* Uptime com Milissegundos */
+    .fetch-uptime-box {
+      background: var(--ctp-crust);
+      border: 1px solid rgba(245, 194, 231, 0.25);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-top: 0.3rem;
+    }
+
+    .uptime-digits {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .uptime-ms-badge {
+      background: var(--accent);
+      color: var(--ctp-crust);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 800;
+      font-size: 0.72rem;
+      margin-left: 4px;
+    }
+
+    .palette-blocks {
+      display: flex;
+      gap: 5px;
+      margin-top: 0.6rem;
+    }
+
+    .palette-item {
+      width: 18px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* ================= PROJETOS ================= */
+    .projects-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      background: var(--ctp-mantle);
+      border: 1px solid var(--ctp-surface0);
+      color: var(--ctp-subtext0);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-tab.active, .filter-tab:hover {
+      background: rgba(245, 194, 231, 0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .projects-tiles {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .projects-tiles {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .project-card {
+      background: var(--ctp-mantle);
+      border: 1px solid var(--ctp-surface0);
+      border-radius: 10px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    .project-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-name {
+      color: var(--accent);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .project-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .project-links a {
+      color: var(--ctp-subtext0);
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: color 0.2s;
+    }
+
+    .project-links a:hover {
+      color: var(--accent);
+    }
+
+    .project-desc {
+      font-size: 0.82rem;
+      color: var(--ctp-subtext0);
+      line-height: 1.5;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 1rem;
+    }
+
+    .project-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag-item {
+      font-size: 0.7rem;
+      background: var(--ctp-surface0);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(245, 194, 231, 0.15);
+    }
+
+    /* CLI Box */
+    .cli-box {
+      background: var(--ctp-crust);
+      border-radius: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--ctp-surface0);
+      margin-top: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .cli-output {
+      color: var(--ctp-subtext0);
+      margin-bottom: 0.4rem;
+      min-height: 20px;
+      white-space: pre-line;
+    }
+
+    .cli-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cli-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--accent);
+      font-family: inherit;
+      font-size: 0.85rem;
+      flex: 1;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- WAYBAR -->
+  <div class="waybar-container">
+    <header class="waybar">
+      <div class="waybar-left">
+        <div class="workspaces">
+          <button class="ws-btn active">1</button>
+          <button class="ws-btn">2</button>
+          <button class="ws-btn">3</button>
+        </div>
+        <div class="active-window-title">
+          <i class="ph ph-snowflake"></i> dev@nixos-flake:~
+        </div>
+      </div>
+
+      <div class="waybar-center">
+        <div class="mpris-pill" id="musicPill" title="Clique para Pausar/Tocar">
+          <button class="play-btn" id="playBtn" type="button">
+            <i class="ph-fill ph-pause" id="playIcon"></i>
+          </button>
+          <div class="track-meta">
+            <i class="ph ph-vinyl-record" style="animation: spin 3s linear infinite; color: var(--accent);"></i>
+            <span class="track-title">synth_tux - compiling tears in hyprland.flac</span>
+            <span class="track-time">01:42 / 03:24</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="waybar-right">
+        <div class="module-pill age-pill" title="Tempo de vida desde 15/11/2006">
+          <i class="ph ph-heartbeat"></i>
+          <span id="waybarAgeText">calculando...</span>
+          <span class="age-ms" id="waybarAgeMs">.000</span>
+        </div>
+
+        <div class="module-pill">
+          <i class="ph ph-cpu"></i>
+          <span id="cpuLoad">12%</span>
+        </div>
+        <div class="module-pill">
+          <i class="ph ph-clock"></i>
+          <span id="clockDisplay">00:00:00</span>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <!-- HYPRLAND WORKSPACE -->
+  <main class="hypr-workspace">
+
+    <!-- COLUNA ESQUERDA -->
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      
+      <!-- CMatrix Tile -->
+      <div class="hypr-tile tile-cmatrix active-window" tabindex="0">
+        <div class="tile-bar">
+          <div class="tile-dots">
+            <span class="dot dot-close"></span>
+            <span class="dot dot-min"></span>
+            <span class="dot dot-max"></span>
+          </div>
+          <div class="tile-title"><i class="ph ph-matrix-logo"></i> cmatrix -C pink</div>
+          <span style="font-size: 0.7rem; color: var(--ctp-overlay0);">tty2</span>
+        </div>
+        <canvas id="matrixCanvas"></canvas>
+      </div>
+
+      <!-- CAVA Equalizer -->
+      <div class="hypr-tile" tabindex="0">
+        <div class="tile-bar">
+          <div class="tile-dots">
+            <span class="dot dot-close"></span>
+            <span class="dot dot-min"></span>
+            <span class="dot dot-max"></span>
+          </div>
+          <div class="tile-title"><i class="ph ph-waveform"></i> cava // alsa_output.pci</div>
+          <span style="color: var(--accent); font-size: 0.7rem;">● ONLINE</span>
+        </div>
+        <div class="tile-body">
+          <div class="cava-wrapper">
+            <div class="cava-bars" id="cavaContainer"></div>
+            <div class="cava-info">
+              <span>source: pipewire</span>
+              <span id="cavaStatus" style="color: var(--accent);">syncing with synth_tux</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fastfetch NixOS Tile -->
+      <div class="hypr-tile" tabindex="0">
+        <div class="tile-bar">
+          <div class="tile-dots">
+            <span class="dot dot-close"></span>
+            <span class="dot dot-min"></span>
+            <span class="dot dot-max"></span>
+          </div>
+          <div class="tile-title"><i class="ph ph-snowflake"></i> fastfetch --dev-info</div>
+          <span style="color: var(--ctp-mauve); font-size: 0.7rem;">nix-shell</span>
+        </div>
+        <div class="tile-body">
+          <div class="fastfetch-container">
+            
+            <div class="fastfetch-header-grid">
+              <div class="nixos-snowflake-ascii">
+  \\\\  \\\\ //
+ ==\\__\\/ //
+   //   \\//
+  //     //
+ //  /\  \\
+//  //\\__\\==
+\\ //  \\  \\
+              </div>
+              <div class="fastfetch-user-banner">
+                <div class="user-host-title">
+                  <span class="user-name">dev</span><span class="host-at">@</span><span class="host-name">nixos-box</span>
+                </div>
+                <div class="user-separator">----------------------------</div>
+                <div style="font-size: 0.72rem; color: var(--ctp-subtext0);">
+                  Nix Flakes &middot; Home-Manager
+                </div>
+              </div>
+            </div>
+
+            <div class="fastfetch-list">
+              <div class="fetch-item">
+                <span class="fetch-key"><i class="ph ph-snowflake"></i> Distro:</span>
+                <span class="fetch-val" style="color: var(--ctp-blue); font-weight: 600;">NixOS (unstable/flakes)</span>
+              </div>
+
+              <div class="fetch-item">
+                <span class="fetch-key"><i class="ph ph-cpu"></i> Carreira:</span>
+                <span class="fetch-val">Full-Stack Dev &middot; DevOps & Systems</span>
+              </div>
+
+              <div class="fetch-item">
+                <span class="fetch-key"><i class="ph ph-package"></i> Software:</span>
+                <span class="fetch-val" style="color: var(--ctp-mauve);">
+                  Rust, Go, TypeScript, Python, Nix, Bash, C
+                </span>
+              </div>
+
+              <div class="fetch-item">
+                <span class="fetch-key"><i class="ph ph-terminal"></i> Shell & WM:</span>
+                <span class="fetch-val">Hyprland &middot; Zsh + Starship</span>
+              </div>
+
+              <div class="fetch-item">
+                <span class="fetch-key"><i class="ph ph-code"></i> Editor:</span>
+                <span class="fetch-val">Neovim (Lua / nixvim)</span>
+              </div>
+
+              <!-- Uptime em Tempo Real com MS -->
+              <div class="fetch-uptime-box">
+                <div style="font-size: 0.7rem; color: var(--ctp-subtext0); margin-bottom: 2px;">
+                  <i class="ph ph-timer"></i> <strong>Uptime (Idade desde 15/11/2006):</strong>
+                </div>
+                <div class="uptime-digits">
+                  <span id="fetchYears">00y</span> 
+                  <span id="fetchDays">000d</span> 
+                  <span id="fetchTime">00:00:00</span>
+                  <span class="uptime-ms-badge" id="fetchMs">000ms</span>
+                </div>
+                <div style="font-size: 0.68rem; color: var(--ctp-overlay0); margin-top: 2px;" id="decimalAge">
+                  tempo contínuo: 00.00000000 anos
+                </div>
+              </div>
+
+              <!-- Paleta Catppuccin -->
+              <div class="palette-blocks">
+                <div class="palette-item" style="background: var(--ctp-crust);"></div>
+                <div class="palette-item" style="background: var(--ctp-red);"></div>
+                <div class="palette-item" style="background: var(--ctp-green);"></div>
+                <div class="palette-item" style="background: var(--ctp-yellow);"></div>
+                <div class="palette-item" style="background: var(--ctp-blue);"></div>
+                <div class="palette-item" style="background: var(--ctp-mauve);"></div>
+                <div class="palette-item" style="background: var(--ctp-pink);"></div>
+                <div class="palette-item" style="background: var(--ctp-text);"></div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COLUNA DIREITA (PROJETOS & CLI) -->
+    <div class="hypr-tile" tabindex="0" style="min-height: 600px;">
+      <div class="tile-bar">
+        <div class="tile-dots">
+          <span class="dot dot-close"></span>
+          <span class="dot dot-min"></span>
+          <span class="dot dot-max"></span>
+        </div>
+        <div class="tile-title"><i class="ph ph-folder-open"></i> ~/projects_showcase/</div>
+        <span style="color: var(--accent); font-size: 0.75rem;">nix-store*</span>
+      </div>
+
+      <div class="tile-body projects-container">
+        
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">todos.nix</button>
+          <button class="filter-tab" data-filter="ricing">dotfiles_ricing</button>
+          <button class="filter-tab" data-filter="scripts">scripts_cli</button>
+          <button class="filter-tab" data-filter="infra">homelab_devops</button>
+        </div>
+
+        <div class="projects-tiles">
+          
+          <div class="project-card" data-cat="ricing">
+            <div>
+              <div class="project-head">
+                <span class="project-name">nixos-hyprland-flake</span>
+                <div class="project-links">
+                  <a href="#" title="GitHub"><i class="ph ph-github-logo"></i></a>
+                  <a href="#" title="Preview"><i class="ph ph-arrow-up-right"></i></a>
+                </div>
+              </div>
+              <p class="project-desc">
+                Configuração reprodutível e declarativa em NixOS com Hyprland, Waybar personalizada, animações suaves e tema Catppuccin Mocha Pink unificado via Stylix.
+              </p>
+            </div>
+            <div class="project-tags">
+              <span class="tag-item">nixos</span>
+              <span class="tag-item">hyprland</span>
+              <span class="tag-item">stylix</span>
+            </div>
+          </div>
+
+          <div class="project-card" data-cat="scripts">
+            <div>
+              <div class="project-head">
+                <span class="project-name">nix-system-daemon</span>
+                <div class="project-links">
+                  <a href="#" title="GitHub"><i class="ph ph-github-logo"></i></a>
+                </div>
+              </div>
+              <p class="project-desc">
+                Daemon escrito em Rust para automação de garbage collection no nix-store, snapshots de geração do sistema e backups criptografados.
+              </p>
+            </div>
+            <div class="project-tags">
+              <span class="tag-item">rust</span>
+              <span class="tag-item">nix</span>
+              <span class="tag-item">systemd</span>
+            </div>
+          </div>
+
+          <div class="project-card" data-cat="infra">
+            <div>
+              <div class="project-head">
+                <span class="project-name">homelab-iac</span>
+                <div class="project-links">
+                  <a href="#" title="GitHub"><i class="ph ph-github-logo"></i></a>
+                </div>
+              </div>
+              <p class="project-desc">
+                Cluster de servidores residenciais provisionados declarativamente. Traefik reverse proxy, contêineres OCI e túnel WireGuard criptografado.
+              </p>
+            </div>
+            <div class="project-tags">
+              <span class="tag-item">nixops</span>
+              <span class="tag-item">docker</span>
+              <span class="tag-item">wireguard</span>
+            </div>
+          </div>
+
+          <div class="project-card" data-cat="scripts">
+            <div>
+              <div class="project-head">
+                <span class="project-name">pink-fetch</span>
+                <div class="project-links">
+                  <a href="#" title="GitHub"><i class="ph ph-github-logo"></i></a>
+                </div>
+              </div>
+              <p class="project-desc">
+                CLI ultra veloz escrito em C que lê diretamente o sysfs e renderiza a paleta Catppuccin e logos customizados em sub-milissegundos.
+              </p>
+            </div>
+            <div class="project-tags">
+              <span class="tag-item">c</span>
+              <span class="tag-item">posix</span>
+              <span class="tag-item">catppuccin</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="cli-box">
+          <div class="cli-output" id="cliOutput">Digite "ajuda", "nixos" ou "idade" para ver os comandos.</div>
+          <div class="cli-input-wrapper">
+            <span style="color: var(--accent); font-weight: bold;">➜</span>
+            <input type="text" id="cliInput" class="cli-input" placeholder="digite um comando (ex: nixos, idade, quem, clear)..." autocomplete="off">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= JAVASCRIPT BLINDADO CONTRA ERROS ================= -->
+  <script>
+    // Flag de reprodução global compartilhada
+    let isPlaying = true;
+
+    // Executa apenas quando todo o DOM estiver pronto
+    document.addEventListener('DOMContentLoaded', () => {
+
+      /* ----------------------------------------------------
+         1. CONTADOR DE IDADE / UPTIME (15/11/2006) COM MS
+      ---------------------------------------------------- */
+      try {
+        const birthDate = new Date(2006, 10, 15, 0, 0, 0, 0);
+        const waybarAgeText = document.getElementById('waybarAgeText');
+        const waybarAgeMs = document.getElementById('waybarAgeMs');
+        const fetchYears = document.getElementById('fetchYears');
+        const fetchDays = document.getElementById('fetchDays');
+        const fetchTime = document.getElementById('fetchTime');
+        const fetchMs = document.getElementById('fetchMs');
+        const decimalAge = document.getElementById('decimalAge');
+
+        function updateAgeLoop() {
+          const now = new Date();
+          const diffMs = now.getTime() - birthDate.getTime();
+
+          const ms = diffMs % 1000;
+          const totalSeconds = Math.floor(diffMs / 1000);
+          const seconds = totalSeconds % 60;
+          const totalMinutes = Math.floor(totalSeconds / 60);
+          const minutes = totalMinutes % 60;
+          const totalHours = Math.floor(totalMinutes / 60);
+          const hours = totalHours % 24;
+          const totalDays = Math.floor(totalHours / 24);
+
+          const years = Math.floor(totalDays / 365.2425);
+          const remainingDays = Math.floor(totalDays % 365.2425);
+          const exactYearsDecimal = (diffMs / (365.2425 * 24 * 60 * 60 * 1000)).toFixed(8);
+
+          const pad2 = (n) => String(n).padStart(2, '0');
+          const pad3 = (n) => String(n).padStart(3, '0');
+
+          const strTime = `${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
+          const strMs = pad3(ms);
+
+          if (fetchYears) fetchYears.textContent = `${years}y`;
+          if (fetchDays) fetchDays.textContent = `${remainingDays}d`;
+          if (fetchTime) fetchTime.textContent = strTime;
+          if (fetchMs) fetchMs.textContent = `${strMs}ms`;
+          if (decimalAge) decimalAge.textContent = `tempo contínuo: ${exactYearsDecimal} anos`;
+
+          if (waybarAgeText) waybarAgeText.textContent = `${years}y ${remainingDays}d ${strTime}`;
+          if (waybarAgeMs) waybarAgeMs.textContent = `.${strMs}`;
+
+          requestAnimationFrame(updateAgeLoop);
+        }
+        requestAnimationFrame(updateAgeLoop);
+      } catch (err) {
+        console.error('Erro no contador de idade:', err);
+      }
+
+      /* ----------------------------------------------------
+         2. CMATRIX PINK EDITION
+      ---------------------------------------------------- */
+      try {
+        const canvas = document.getElementById('matrixCanvas');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789:・."=*+-<>¦|';
+          const fontSize = 13;
+          let columns = 0;
+          let drops = [];
+
+          function resizeMatrix() {
+            // Garante largura e altura estritamente positivas
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.max(Math.floor(rect.width || canvas.offsetWidth || 300), 50);
+            canvas.height = Math.max(Math.floor(rect.height || canvas.offsetHeight || 180), 50);
+
+            columns = Math.max(1, Math.floor(canvas.width / fontSize));
+            drops = Array(columns).fill(1);
+          }
+
+          resizeMatrix();
+          window.addEventListener('resize', resizeMatrix);
+
+          function renderMatrix() {
+            ctx.fillStyle = 'rgba(17, 17, 27, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+              const text = chars.charAt(Math.floor(Math.random() * chars.length));
+              ctx.fillStyle = Math.random() > 0.85 ? '#ffffff' : (Math.random() > 0.5 ? '#f5c2e7' : '#cba6f7');
+              ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+              if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+              }
+              drops[i]++;
+            }
+          }
+          setInterval(renderMatrix, 45);
+        }
+      } catch (err) {
+        console.error('Erro no CMatrix:', err);
+      }
+
+      /* ----------------------------------------------------
+         3. CAVA EQUALIZER
+      ---------------------------------------------------- */
+      try {
+        const cavaContainer = document.getElementById('cavaContainer');
+        if (cavaContainer) {
+          cavaContainer.innerHTML = '';
+          const totalBars = 22;
+          const barElements = [];
+
+          for (let i = 0; i < totalBars; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'cava-bar';
+            cavaContainer.appendChild(bar);
+            barElements.push(bar);
+          }
+
+          function renderCava() {
+            if (isPlaying) {
+              const t = Date.now() * 0.005;
+              barElements.forEach((bar, index) => {
+                const noise = Math.sin(t + index * 0.4) * 0.35 + 0.5;
+                const randomFactor = Math.random() * 0.4;
+                const heightPercent = Math.min(100, Math.max(8, (noise + randomFactor) * 100));
+                bar.style.height = `${heightPercent}%`;
+              });
+            } else {
+              barElements.forEach(bar => {
+                bar.style.height = '6%';
+              });
+            }
+            requestAnimationFrame(renderCava);
+          }
+          requestAnimationFrame(renderCava);
+        }
+      } catch (err) {
+        console.error('Erro no CAVA:', err);
+      }
+
+      /* ----------------------------------------------------
+         4. PLAYER DA WAYBAR & RELÓGIO
+      ---------------------------------------------------- */
+      try {
+        const musicPill = document.getElementById('musicPill');
+        const playIcon = document.getElementById('playIcon');
+        const cavaStatus = document.getElementById('cavaStatus');
+
+        if (musicPill) {
+          musicPill.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (playIcon) {
+              playIcon.className = isPlaying ? 'ph-fill ph-pause' : 'ph-fill ph-play';
+            }
+            if (cavaStatus) {
+              cavaStatus.textContent = isPlaying ? 'syncing with synth_tux' : 'PAUSED';
+              cavaStatus.style.color = isPlaying ? 'var(--accent)' : 'var(--ctp-red)';
+            }
+          });
+        }
+
+        const clockDisplay = document.getElementById('clockDisplay');
+        const cpuLoad = document.getElementById('cpuLoad');
+
+        function updateClock() {
+          const now = new Date();
+          if (clockDisplay) {
+            clockDisplay.textContent = now.toTimeString().split(' ')[0];
+          }
+          if (cpuLoad && Math.random() > 0.7) {
+            const fakeCpu = Math.floor(Math.random() * 14) + 8;
+            cpuLoad.textContent = `${fakeCpu}%`;
+          }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+      } catch (err) {
+        console.error('Erro na Waybar/Clock:', err);
+      }
+
+      /* ----------------------------------------------------
+         5. FOCO DE JANELA (HYPRLAND) & FILTRO DE PROJETOS
+      ---------------------------------------------------- */
+      try {
+        const tiles = document.querySelectorAll('.hypr-tile');
+        tiles.forEach(tile => {
+          tile.addEventListener('click', () => {
+            tiles.forEach(t => t.classList.remove('active-window'));
+            tile.classList.add('active-window');
+          });
+        });
+
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        filterTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            filterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const cat = tab.getAttribute('data-filter');
+            projectCards.forEach(card => {
+              if (cat === 'all' || card.getAttribute('data-cat') === cat) {
+                card.style.display = 'flex';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+          });
+        });
+      } catch (err) {
+        console.error('Erro nos filtros/foco:', err);
+      }
+
+      /* ----------------------------------------------------
+         6. TERMINAL CLI
+      ---------------------------------------------------- */
+      try {
+        const cliInput = document.getElementById('cliInput');
+        const cliOutput = document.getElementById('cliOutput');
+
+        if (cliInput && cliOutput) {
+          cliInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              const cmd = cliInput.value.trim().toLowerCase();
+              cliInput.value = '';
+
+              switch (cmd) {
+                case 'ajuda':
+                case 'help':
+                  cliOutput.textContent = 'Comandos disponíveis:\n- nixos: detalhes da config declarativa\n- idade: calcula o tempo exato desde 15/11/2006\n- quem: resumo do dev\n- clear: limpar tela';
+                  break;
+                case 'nixos':
+                  cliOutput.textContent = 'system.stateVersion = "24.11";\nflake.lock = verified;\nhome-manager.users.dev = catppuccin-mocha-pink;';
+                  break;
+                case 'idade':
+                case 'uptime':
+                  const diff = Date.now() - new Date(2006, 10, 15).getTime();
+                  const yearsDec = (diff / (365.2425 * 86400000)).toFixed(8);
+                  cliOutput.textContent = `Nascido em: 15/11/2006\nUptime total: ${Math.floor(diff/86400000)} dias (${yearsDec} anos corridos)`;
+                  break;
+                case 'quem':
+                case 'whoami':
+                  cliOutput.textContent = 'Dev focado em NixOS, Hyprland, Rust e arquiteturas escaláveis.';
+                  break;
+                case 'clear':
+                  cliOutput.textContent = '';
+                  break;
+                default:
+                  cliOutput.textContent = `nix-shell: command not found: ${cmd}. Digite "ajuda".`;
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Erro no CLI:', err);
+      }
+
+    });
+  </script>
+</body>
+</html>
